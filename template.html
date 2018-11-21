@@ -1,0 +1,133 @@
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.11/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.11/addons/p5.dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.11/addons/p5.sound.min.js"></script>
+    <script>
+        var particle1
+        var attractor
+        
+        function setup() { 
+            createCanvas(1510, 700);
+            particle1 = new Particle(200, 100,1,150);
+            attractor = new Attractor();
+            //particle2 = new Particle(300 ,100,5,255);
+        } 
+        
+        function draw() { 
+            background(51);
+            
+            var wind = createVector(random(-1,1) ,0);
+            
+            //var gravity1 = createVector(0, 0.1*particle1.mass);
+            //var gravity2 = createVector(0, 0.1*particle2.mass);
+            //particle1.applyForce(gravity1);
+            //particle2.applyForce(gravity2);
+            if(mouseIsPressed){
+                particle1.applyForce(wind);
+                //particle2.applyForce(wind);
+            }
+            
+            var force = attractor.calculateAttraction(particle1);
+            particle1.applyForce(force);
+            
+            
+            
+            attractor.display();
+            particle1.update();
+            particle1.edges();
+            particle1.vel.mult(0.99);
+            //particle1.overlap();
+            particle1.display();           
+            //particle2.update();
+            //particle2.edges();
+            //particle2.display();
+        }
+        
+        function Attractor(){
+            this.pos = createVector(width/2, height/2);
+            this.mass = 100;
+            this.display = function(){
+                fill(130);
+                ellipse(width/2, height/2, 60, 60);
+            }
+            
+            this.calculateAttraction = function(m){
+                var force = p5.Vector.sub(this.pos, m.pos);
+                var distance = force.mag();
+                distance = constrain(distance, 5 ,25);
+                force.normalize();
+                
+                var grav = m.mass*this.mass/(distance*distance);
+                force.mult(grav);
+                return force;
+            }
+        }
+        
+        
+        function Particle(w, h, m,c){
+            this.pos = createVector(w, h);
+            this.vel = createVector(0,0);
+            this.acc = createVector(0,0);
+            this.mass = m;
+            this.color = c;
+    
+            this.update = function(){
+                this.vel.add(this.acc);
+                this.pos.add(this.vel);
+                
+                this.acc.set(0,0);
+                if(this.vel.x > 100 || this.vel.y > 100){
+                    this.vel.set(2,2);
+                }
+            }
+    
+            this.display = function(){
+                fill(this.color);
+                ellipse(this.pos.x, this.pos.y, this.mass*10, this.mass*10);
+            }
+            
+            this.applyForce = function(force){
+                var f = force.copy();
+                f.div(this.mass);
+                this.acc.add(f);
+            }
+            
+            this.edges = function(){
+                if(this.pos.y>height-24){
+                    this.vel.y *= -1;
+                    //this.pos.y = height;
+                }
+                else if(this.pos.y<=24){
+                    this.vel.y *= -1;
+                    this.pos.y = 24;
+                }
+                if(this.pos.x<=24){
+                    this.vel.x *= -1;
+                    
+                }
+                else if(this.pos.x>width-24){
+                    this.vel.x *= -1;
+                    //this.pos.x = 200;
+                }
+            }
+            
+            //this.overlap = function(){
+                //if(this.pos.y == particle2.pos.y-24 || this.pos.y == particle2.pos.y+24){
+                //    this.vel.y *= -1;
+                //    particle2.vel.y *= -1;
+                //}
+                //if(this.pos.x == particle2.pos.y-24 || this.pos.x == particle2.pos.y+24){
+                //    this.vel.x *= -1;
+                //    particle2.vel.x *= -1;
+                //}
+            //}
+        }
+    </script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <script src="sketch.js"></script>
+  </body>
+</html>        
+    if (((paddle1_pos <= ball_pos[1]) and (paddle1_pos + PAD_HEIGHT >= ball_pos[1]) and (ball_pos[0] <= 16)) or ((paddle2_pos <= ball_pos[1]) and (paddle2_pos >= ball_pos[1]+PAD_HEIGHT) and (ball_pos[0] <= WIDTH-16))):
